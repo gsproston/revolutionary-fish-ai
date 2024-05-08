@@ -15,4 +15,4 @@ func _process(delta):
 
 
 func _draw():
-	draw_arc(Vector2.ZERO, RADIUS, 0, TAU, 128, Color.BLACK, 1.0, true)
+	draw_arc(Vector2.ZERO, RADIUS, 0, TAU, 128, Color.LIGHT_SEA_GREEN, 1.0, true)
