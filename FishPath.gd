@@ -19,5 +19,10 @@ func _process(delta):
 		bubble_angle -= TAU
 	$Bubble.position = Vector2(RAIDUS, 0).rotated(bubble_angle)
 
+
 func _draw():
 	draw_arc(Vector2.ZERO, RAIDUS, 0, TAU, 128, Color.LIGHT_SEA_GREEN, 1.0, true)
+	
+	
+func get_bubble_position() -> Vector2:
+	return position + $Bubble.position
