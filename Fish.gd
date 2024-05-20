@@ -14,13 +14,16 @@ func _ready():
 # Called every frame. 'delta' is the elapsed time since the previous frame.
 func _process(delta):
 	if (target_position != Vector2.ZERO):
+		# rotate towards the bubble
+		rotation = position.angle_to_point(target_position)
+		print(rad_to_deg(rotation))
 		# move towards the bubble
 		var direction = target_position - position
 		position += direction.normalized() * SPEED * delta
 	
 	
 func _draw():
-	draw_line(position - Vector2(-LENGTH, position.y), position + Vector2(LENGTH, position.y), Color.CORAL, 1.0, true);
+	draw_line(-Vector2(LENGTH, 0), Vector2(LENGTH, 0), Color.CORAL, 1.0, true);
 	
 	
 func set_target_position(new_target_position: Vector2):
