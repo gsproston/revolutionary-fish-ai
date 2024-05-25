@@ -5,6 +5,7 @@ enum FISH_STATE {
 	LOST
 }
 
+const BUBBLE_RADIUS_TARGET_CHANGE = 0.1
 const LENGTH = 5
 const LOST_DISTANCE = 50
 const SWIM_SPEED_MIN = 10.0
@@ -15,6 +16,7 @@ const TARGET_ROTATION_TOLERANCE = 0.01
 const TURN_SPEED = 5.0
 
 var bubble_position = Vector2.ZERO
+var bubble_radius_target = 0.5
 var speed = SWIM_SPEED_MIN
 var state = FISH_STATE.IDLE
 var swim_timer = SWIM_COOLDOWN_SECONDS
@@ -46,13 +48,14 @@ func _process(delta):
 		_rotate_to_target(delta)
 	
 	if (swim_timer > SWIM_COOLDOWN_SECONDS && state == FISH_STATE.LOST):
+		update_bubble_radius_target()
 		# get new target rotation
 		var distance_to_bubble = position.distance_to(bubble_position)
 		var angle = acos(LOST_DISTANCE / distance_to_bubble)
 		var angle_a = bubble_position.angle_to_point(position) + angle
 		var angle_b = bubble_position.angle_to_point(position) - angle
-		var target_position_a = bubble_position + Vector2.from_angle(angle_a) * LOST_DISTANCE * 0.75
-		var target_position_b = bubble_position + Vector2.from_angle(angle_b) * LOST_DISTANCE * 0.75
+		var target_position_a = bubble_position + Vector2.from_angle(angle_a) * LOST_DISTANCE * bubble_radius_target
+		var target_position_b = bubble_position + Vector2.from_angle(angle_b) * LOST_DISTANCE * bubble_radius_target
 		var angle_difference_a = angle_difference(rotation, position.angle_to_point(target_position_a))
 		var angle_difference_b = angle_difference(rotation, position.angle_to_point(target_position_b))
 		if (
@@ -74,18 +77,20 @@ func _draw():
 	
 	
 func _rotate_to_target(delta: float):
-	# TODO maybe simplify this with angle_difference
-	# standardise target
-	while (target_rotation < rotation - PI):
-		target_rotation += TAU
-	while (target_rotation > rotation + PI):
-		target_rotation += TAU
-	
+	var angle_to_target = angle_difference(rotation, target_rotation)	
+	var angle_change = TURN_SPEED * delta
 	# rotate towards the target
-	if (rotation > target_rotation):
-		rotation = max(rotation - TURN_SPEED * delta, target_rotation)
-	elif (rotation < target_rotation):
-		rotation = min(rotation + TURN_SPEED * delta, target_rotation)
+	if (angle_to_target < angle_change):
+		rotation = target_rotation
+	if (angle_to_target > 0):
+		rotation += angle_change
+	elif (angle_to_target < 0):
+		rotation -= angle_change
+		
+		
+func update_bubble_radius_target():
+	var new_bubble_radius_change = randf_range(-BUBBLE_RADIUS_TARGET_CHANGE, BUBBLE_RADIUS_TARGET_CHANGE)
+	bubble_radius_target = clampf(bubble_radius_target + new_bubble_radius_change, 0.0, 1.0)
 	
 	
 func set_target_position(new_target_position: Vector2):
