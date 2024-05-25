@@ -61,11 +61,9 @@ func _draw():
 	
 func _calculate_new_target_rotation():
 	var distance_to_bubble = position.distance_to(bubble_position)
-	var angle = acos(LOST_DISTANCE / distance_to_bubble)
-	var angle_a = bubble_position.angle_to_point(position) + angle
-	var angle_b = bubble_position.angle_to_point(position) - angle
-	var target_position_a = bubble_position + Vector2.from_angle(angle_a) * LOST_DISTANCE * bubble_radius_target
-	var target_position_b = bubble_position + Vector2.from_angle(angle_b) * LOST_DISTANCE * bubble_radius_target
+	var angle = bubble_position.angle_to_point(position) + acos(LOST_DISTANCE / distance_to_bubble)
+	var target_position_a = bubble_position + Vector2.from_angle(angle) * LOST_DISTANCE * bubble_radius_target
+	var target_position_b = bubble_position - Vector2.from_angle(angle) * LOST_DISTANCE * bubble_radius_target
 	var angle_difference_a = angle_difference(actual_rotation, position.angle_to_point(target_position_a))
 	var angle_difference_b = angle_difference(actual_rotation, position.angle_to_point(target_position_b))
 	if (
