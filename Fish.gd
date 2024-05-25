@@ -14,10 +14,10 @@ const SWIM_COOLDOWN_SECONDS = 2.0
 const TARGET_ROTATION_TOLERANCE = 0.01
 const TURN_SPEED = 5.0
 
+var bubble_position = Vector2.ZERO
 var speed = SWIM_SPEED_MIN
 var state = FISH_STATE.IDLE
 var swim_timer = SWIM_COOLDOWN_SECONDS
-var target_position = Vector2.ZERO
 var target_rotation = 0.0
 
 
@@ -29,8 +29,10 @@ func _ready():
 # Called every frame. 'delta' is the elapsed time since the previous frame.
 func _process(delta):
 	# update the state
-	if (position.distance_to(target_position) > LOST_DISTANCE):
-		state = FISH_STATE.LOST
+	if (position.distance_to(bubble_position) > LOST_DISTANCE):
+		if (state != FISH_STATE.LOST):
+			state = FISH_STATE.LOST
+			swim_timer = 0
 	else:
 		state = FISH_STATE.IDLE
 	
@@ -44,10 +46,26 @@ func _process(delta):
 		_rotate_to_target(delta)
 	
 	if (swim_timer > SWIM_COOLDOWN_SECONDS && state == FISH_STATE.LOST):
-		target_rotation = position.angle_to_point(target_position)
+		# get new target rotation
+		var distance_to_bubble = position.distance_to(bubble_position)
+		var angle = acos(LOST_DISTANCE / distance_to_bubble)
+		var angle_a = bubble_position.angle_to_point(position) + angle
+		var angle_b = bubble_position.angle_to_point(position) - angle
+		var target_position_a = bubble_position + Vector2.from_angle(angle_a) * LOST_DISTANCE * 0.75
+		var target_position_b = bubble_position + Vector2.from_angle(angle_b) * LOST_DISTANCE * 0.75
+		var angle_difference_a = angle_difference(rotation, position.angle_to_point(target_position_a))
+		var angle_difference_b = angle_difference(rotation, position.angle_to_point(target_position_b))
+		if (
+			(angle_difference_a < 0 && angle_difference_b < 0) ||
+			(angle_difference_a > 0 && angle_difference_b > 0)
+		):
+			if (abs(angle_difference_a) < abs(angle_difference_b)):
+				target_rotation = position.angle_to_point(target_position_a)
+			else:
+				target_rotation = position.angle_to_point(target_position_b)
+		
+		# start schwimmin
 		swim_timer = 0
-		# move towards the bubble
-		var direction = target_position - position
 		speed = SWIM_SPEED_MAX
 	
 	
@@ -56,6 +74,7 @@ func _draw():
 	
 	
 func _rotate_to_target(delta: float):
+	# TODO maybe simplify this with angle_difference
 	# standardise target
 	while (target_rotation < rotation - PI):
 		target_rotation += TAU
@@ -70,4 +89,4 @@ func _rotate_to_target(delta: float):
 	
 	
 func set_target_position(new_target_position: Vector2):
-	target_position = new_target_position
+	bubble_position = new_target_position
