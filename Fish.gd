@@ -75,13 +75,14 @@ func _calculate_new_target_rotation():
 		else:
 			target_rotation = position.angle_to_point(target_position_b)
 	
+	
 func _rotate_to_target(delta: float):
 	var angle_to_target = angle_difference(actual_rotation, target_rotation)	
 	var angle_change = TURN_SPEED * delta
 	# rotate towards the target
 	if (angle_to_target < angle_change):
 		actual_rotation = target_rotation
-	if (angle_to_target > 0):
+	elif (angle_to_target > 0):
 		actual_rotation += angle_change
 	elif (angle_to_target < 0):
 		actual_rotation -= angle_change
