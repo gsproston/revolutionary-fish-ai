@@ -25,4 +25,4 @@ func _draw():
 	
 	
 func get_bubble_position() -> Vector2:
-	return position + $Bubble.position
+	return $Bubble.global_position
