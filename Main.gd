@@ -5,8 +5,11 @@ extends Node
 func _ready():
 	# centre the fish path
 	$FishPath.position = get_viewport().get_visible_rect().get_center()
-	# TODO random start position
-	$Fish.position = Vector2(10, 10)
+	var viewport_size = get_viewport().get_visible_rect().size
+	$Fish.position = Vector2(
+		randi_range(0, viewport_size.x), 
+		randi_range(0, viewport_size.y)
+	)
 
 
 # Called every frame. 'delta' is the elapsed time since the previous frame.
