@@ -6,12 +6,14 @@ enum FISH_STATE {
 }
 
 const BUBBLE_RADIUS_TARGET_CHANGE = 0.1
+const BUBBLE_RADIUS_TARGET_MIN = 0.25
+const BUBBLE_RADIUS_TARGET_MAX = 0.95
 const LENGTH = 5
 const LOST_DISTANCE = 50
 const SWIM_SPEED_MIN = 20.0
-const SWIM_SPEED_MAX = 100.0
-const SWIM_SPEED_DECREASE_RATE = 0.9
-const SWIM_COOLDOWN_SECONDS = 1.8
+const SWIM_SPEED_MAX = 80.0
+const SWIM_SPEED_DECREASE_RATE = 0.95
+const SWIM_COOLDOWN_SECONDS = 1.2
 const TARGET_ROTATION_TOLERANCE = 0.01
 const TURN_SPEED = 5.0
 const WIGGLE_ANGLE_MAX = PI / 32.0
@@ -98,11 +100,18 @@ func _rotate_to_target(delta: float):
 		actual_rotation += angle_change
 	elif (angle_to_target < 0):
 		actual_rotation -= angle_change
-		
-		
+
+
 func _update_bubble_radius_target():
-	var new_bubble_radius_change = randf_range(-BUBBLE_RADIUS_TARGET_CHANGE, BUBBLE_RADIUS_TARGET_CHANGE)
-	bubble_radius_target = clampf(bubble_radius_target + new_bubble_radius_change, 0.0, 1.0)
+	var new_bubble_radius_change = randf_range(
+		-BUBBLE_RADIUS_TARGET_CHANGE, 
+		BUBBLE_RADIUS_TARGET_CHANGE
+	)
+	bubble_radius_target = clampf(
+		bubble_radius_target + new_bubble_radius_change, 
+		BUBBLE_RADIUS_TARGET_MIN, 
+		BUBBLE_RADIUS_TARGET_MAX
+	)
 	
 	
 func _update_state():
