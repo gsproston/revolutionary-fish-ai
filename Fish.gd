@@ -6,12 +6,14 @@ enum FISH_STATE {
 }
 
 const BUBBLE_RADIUS_TARGET_CHANGE = 0.1
+const BUBBLE_RADIUS_TARGET_MIN = 0.25
+const BUBBLE_RADIUS_TARGET_MAX = 0.95
 const LENGTH = 5
 const LOST_DISTANCE = 50
 const SWIM_SPEED_MIN = 20.0
-const SWIM_SPEED_MAX = 100.0
-const SWIM_SPEED_DECREASE_RATE = 0.9
-const SWIM_COOLDOWN_SECONDS = 1.8
+const SWIM_SPEED_MAX = 80.0
+const SWIM_SPEED_DECREASE_RATE = 0.95
+const SWIM_COOLDOWN_SECONDS = 1.2
 const TARGET_ROTATION_TOLERANCE = 0.01
 const TURN_SPEED = 5.0
 const WIGGLE_ANGLE_MAX = PI / 32.0
@@ -41,6 +43,8 @@ func _ready():
 	rotation = randf_range(0, TAU)
 	actual_rotation = rotation
 	target_rotation = rotation
+	# random bubble radius target
+	bubble_radius_target = randf_range(BUBBLE_RADIUS_TARGET_MIN, BUBBLE_RADIUS_TARGET_MAX)
 
 
 # Called every frame. 'delta' is the elapsed time since the previous frame.
@@ -70,7 +74,7 @@ func _draw():
 	
 	
 func _calculate_new_target_rotation():
-	var bubble_position = bubble.global_position
+	var bubble_position = _get_bubble_position()
 	var distance_to_bubble = position.distance_to(bubble_position)
 	var angle = bubble_position.angle_to_point(position) + acos(LOST_DISTANCE / distance_to_bubble)
 	var target_position_a = bubble_position + Vector2.from_angle(angle) * LOST_DISTANCE * bubble_radius_target
@@ -86,8 +90,15 @@ func _calculate_new_target_rotation():
 			target_rotation = position.angle_to_point(target_position_a)
 		else:
 			target_rotation = position.angle_to_point(target_position_b)
-	
-	
+
+
+func _get_bubble_position() -> Vector2:
+	if (bubble == null):
+		return Vector2.ZERO
+	else:
+		return bubble.global_position
+
+
 func _rotate_to_target(delta: float):
 	var angle_to_target = angle_difference(actual_rotation, target_rotation)	
 	var angle_change = TURN_SPEED * delta
@@ -98,15 +109,22 @@ func _rotate_to_target(delta: float):
 		actual_rotation += angle_change
 	elif (angle_to_target < 0):
 		actual_rotation -= angle_change
-		
-		
+
+
 func _update_bubble_radius_target():
-	var new_bubble_radius_change = randf_range(-BUBBLE_RADIUS_TARGET_CHANGE, BUBBLE_RADIUS_TARGET_CHANGE)
-	bubble_radius_target = clampf(bubble_radius_target + new_bubble_radius_change, 0.0, 1.0)
+	var new_bubble_radius_change = randf_range(
+		-BUBBLE_RADIUS_TARGET_CHANGE, 
+		BUBBLE_RADIUS_TARGET_CHANGE
+	)
+	bubble_radius_target = clampf(
+		bubble_radius_target + new_bubble_radius_change, 
+		BUBBLE_RADIUS_TARGET_MIN, 
+		BUBBLE_RADIUS_TARGET_MAX
+	)
 	
 	
 func _update_state():
-	if (bubble != null && position.distance_to(bubble.global_position) > LOST_DISTANCE):
+	if (position.distance_to(_get_bubble_position()) > LOST_DISTANCE):
 		if (state != FISH_STATE.LOST):
 			state = FISH_STATE.LOST
 			swim_timer = 0
