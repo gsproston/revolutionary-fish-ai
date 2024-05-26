@@ -6,10 +6,11 @@ func _ready():
 	# centre the fish path
 	$FishPath.position = get_viewport().get_visible_rect().get_center()
 	var viewport_size = get_viewport().get_visible_rect().size
-	$Fish.position = Vector2(
+	var fish_start_position = Vector2(
 		randi_range(0, viewport_size.x), 
 		randi_range(0, viewport_size.y)
 	)
+	$Fish.position = fish_start_position
 
 
 # Called every frame. 'delta' is the elapsed time since the previous frame.
