@@ -43,6 +43,8 @@ func _ready():
 	rotation = randf_range(0, TAU)
 	actual_rotation = rotation
 	target_rotation = rotation
+	# random bubble radius target
+	bubble_radius_target = randf_range(BUBBLE_RADIUS_TARGET_MIN, BUBBLE_RADIUS_TARGET_MAX)
 
 
 # Called every frame. 'delta' is the elapsed time since the previous frame.
