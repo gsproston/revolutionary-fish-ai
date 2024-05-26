@@ -9,7 +9,7 @@ var bubble_angle = 0
 
 # Called when the node enters the scene tree for the first time.
 func _ready():
-	pass # Replace with function body.
+	position = get_viewport().get_visible_rect().get_center()
 
 
 # Called every frame. 'delta' is the elapsed time since the previous frame.
@@ -24,5 +24,5 @@ func _draw():
 	draw_arc(Vector2.ZERO, RAIDUS, 0, TAU, 128, Color.LIGHT_SEA_GREEN, 0.5, true)
 	
 	
-func get_bubble_position() -> Vector2:
-	return $Bubble.global_position
+func get_bubble() -> Node2D:
+	return $Bubble

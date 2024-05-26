@@ -1,18 +1,20 @@
 extends Node
 
 
+@export var fish_scene: PackedScene
+
+
+const NUM_FISH = 16
+
+
 # Called when the node enters the scene tree for the first time.
 func _ready():
-	# centre the fish path
-	$FishPath.position = get_viewport().get_visible_rect().get_center()
-	var viewport_size = get_viewport().get_visible_rect().size
-	var fish_start_position = Vector2(
-		randi_range(0, viewport_size.x), 
-		randi_range(0, viewport_size.y)
-	)
-	$Fish.position = fish_start_position
+	for i in NUM_FISH:
+		var fish = fish_scene.instantiate()
+		fish.set_target($FishPath.get_bubble())
+		add_child(fish)
 
 
 # Called every frame. 'delta' is the elapsed time since the previous frame.
 func _process(_delta):
-	$Fish.set_target_position($FishPath.get_bubble_position())
+	pass

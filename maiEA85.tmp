@@ -6,6 +6,7 @@
 
 [node name="Main" type="Node"]
 script = ExtResource("1_gbmgu")
-fish_scene = ExtResource("3_me7t5")
 
 [node name="FishPath" parent="." instance=ExtResource("2_qlg2f")]
+
+[node name="Fish" parent="." instance=ExtResource("3_me7t5")]
