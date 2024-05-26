@@ -72,7 +72,7 @@ func _draw():
 	
 	
 func _calculate_new_target_rotation():
-	var bubble_position = bubble.global_position
+	var bubble_position = _get_bubble_position()
 	var distance_to_bubble = position.distance_to(bubble_position)
 	var angle = bubble_position.angle_to_point(position) + acos(LOST_DISTANCE / distance_to_bubble)
 	var target_position_a = bubble_position + Vector2.from_angle(angle) * LOST_DISTANCE * bubble_radius_target
@@ -88,8 +88,15 @@ func _calculate_new_target_rotation():
 			target_rotation = position.angle_to_point(target_position_a)
 		else:
 			target_rotation = position.angle_to_point(target_position_b)
-	
-	
+
+
+func _get_bubble_position() -> Vector2:
+	if (bubble == null):
+		return Vector2.ZERO
+	else:
+		return bubble.global_position
+
+
 func _rotate_to_target(delta: float):
 	var angle_to_target = angle_difference(actual_rotation, target_rotation)	
 	var angle_change = TURN_SPEED * delta
@@ -115,7 +122,7 @@ func _update_bubble_radius_target():
 	
 	
 func _update_state():
-	if (bubble != null && position.distance_to(bubble.global_position) > LOST_DISTANCE):
+	if (position.distance_to(_get_bubble_position()) > LOST_DISTANCE):
 		if (state != FISH_STATE.LOST):
 			state = FISH_STATE.LOST
 			swim_timer = 0
