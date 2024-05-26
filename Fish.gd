@@ -39,7 +39,7 @@ func _process(delta):
 	_update_state()
 	
 	# swim if we're facing the right direction
-	if (abs(actual_rotation - target_rotation) < TARGET_ROTATION_TOLERANCE):
+	if (abs(angle_difference(actual_rotation, target_rotation)) < TARGET_ROTATION_TOLERANCE):
 		swim_timer += delta
 		position += Vector2.from_angle(actual_rotation) * speed * delta
 		var next_speed = speed - speed * SWIM_SPEED_DECREASE_RATE * delta
@@ -80,7 +80,7 @@ func _rotate_to_target(delta: float):
 	var angle_to_target = angle_difference(actual_rotation, target_rotation)	
 	var angle_change = TURN_SPEED * delta
 	# rotate towards the target
-	if (angle_to_target < angle_change):
+	if (abs(angle_to_target) < angle_change):
 		actual_rotation = target_rotation
 	elif (angle_to_target > 0):
 		actual_rotation += angle_change
