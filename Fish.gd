@@ -30,7 +30,17 @@ var wiggle_right = true
 
 # Called when the node enters the scene tree for the first time.
 func _ready():
-	pass
+	# random position
+	var viewport_size = get_viewport().get_visible_rect().size
+	var fish_start_position = Vector2(
+		randi_range(0, viewport_size.x), 
+		randi_range(0, viewport_size.y)
+	)
+	position = fish_start_position
+	# random rotation
+	rotation = randf_range(0, TAU)
+	actual_rotation = rotation
+	target_rotation = rotation
 
 
 # Called every frame. 'delta' is the elapsed time since the previous frame.
