@@ -8,10 +8,10 @@ enum FISH_STATE {
 const BUBBLE_RADIUS_TARGET_CHANGE = 0.1
 const LENGTH = 5
 const LOST_DISTANCE = 50
-const SWIM_SPEED_MIN = 10.0
+const SWIM_SPEED_MIN = 20.0
 const SWIM_SPEED_MAX = 100.0
 const SWIM_SPEED_DECREASE_RATE = 0.9
-const SWIM_COOLDOWN_SECONDS = 2.0
+const SWIM_COOLDOWN_SECONDS = 1.8
 const TARGET_ROTATION_TOLERANCE = 0.01
 const TURN_SPEED = 5.0
 const WIGGLE_ANGLE_MAX = PI / 32.0
@@ -20,8 +20,8 @@ const WIGGLE_SPEED = 0.05
 var actual_rotation = 0.0
 var bubble: Node2D = null
 var bubble_radius_target = 0.5
-var speed = SWIM_SPEED_MIN
 var state = FISH_STATE.IDLE
+var swim_speed = SWIM_SPEED_MIN
 var swim_timer = SWIM_COOLDOWN_SECONDS
 var target_rotation = 0.0
 var wiggle_angle = 0.0
@@ -41,9 +41,9 @@ func _process(delta):
 	# swim if we're facing the right direction
 	if (abs(angle_difference(actual_rotation, target_rotation)) < TARGET_ROTATION_TOLERANCE):
 		swim_timer += delta
-		position += Vector2.from_angle(actual_rotation) * speed * delta
-		var next_speed = speed - speed * SWIM_SPEED_DECREASE_RATE * delta
-		speed = max(SWIM_SPEED_MIN, next_speed);
+		position += Vector2.from_angle(actual_rotation) * swim_speed * delta
+		var next_speed = swim_speed - swim_speed * SWIM_SPEED_DECREASE_RATE * delta
+		swim_speed = max(SWIM_SPEED_MIN, next_speed);
 	else:
 		_rotate_to_target(delta)
 	
@@ -52,7 +52,7 @@ func _process(delta):
 		_calculate_new_target_rotation()
 		# start schwimmin
 		swim_timer = 0
-		speed = SWIM_SPEED_MAX
+		swim_speed = SWIM_SPEED_MAX
 	
 	
 func _draw():
@@ -110,9 +110,9 @@ func _update_wiggle_angle(delta: float):
 	elif (wiggle_angle > WIGGLE_ANGLE_MAX):
 		wiggle_right = false
 	if (wiggle_right): 
-		wiggle_angle += WIGGLE_SPEED * speed * delta
+		wiggle_angle += WIGGLE_SPEED * swim_speed * delta
 	else:
-		wiggle_angle -= WIGGLE_SPEED * speed * delta
+		wiggle_angle -= WIGGLE_SPEED * swim_speed * delta
 	rotation = actual_rotation + wiggle_angle
 	
 	
