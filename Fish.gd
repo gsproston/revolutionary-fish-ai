@@ -68,7 +68,8 @@ func _calculate_new_target_rotation():
 	var angle_difference_b = angle_difference(actual_rotation, position.angle_to_point(target_position_b))
 	if (
 		(angle_difference_a < 0 && angle_difference_b < 0) ||
-		(angle_difference_a > 0 && angle_difference_b > 0)
+		(angle_difference_a > 0 && angle_difference_b > 0) ||
+		abs(angle_difference_a) > PI / 2.0
 	):
 		if (abs(angle_difference_a) < abs(angle_difference_b)):
 			target_rotation = position.angle_to_point(target_position_a)
