@@ -24,5 +24,5 @@ func _draw():
 	draw_arc(Vector2.ZERO, RAIDUS, 0, TAU, 128, Color.LIGHT_SEA_GREEN, 0.5, true)
 	
 	
-func get_bubble_position() -> Vector2:
-	return $Bubble.global_position
+func get_bubble() -> Node2D:
+	return $Bubble

@@ -9,8 +9,9 @@ func _ready():
 		randi_range(0, viewport_size.y)
 	)
 	$Fish.position = fish_start_position
+	$Fish.set_target($FishPath.get_bubble())
 
 
 # Called every frame. 'delta' is the elapsed time since the previous frame.
 func _process(_delta):
-	$Fish.set_target_position($FishPath.get_bubble_position())
+	pass

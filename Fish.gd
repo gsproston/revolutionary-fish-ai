@@ -18,7 +18,7 @@ const WIGGLE_ANGLE_MAX = PI / 32.0
 const WIGGLE_SPEED = 0.05
 
 var actual_rotation = 0.0
-var bubble_position = Vector2.ZERO
+var bubble: Node2D = null
 var bubble_radius_target = 0.5
 var speed = SWIM_SPEED_MIN
 var state = FISH_STATE.IDLE
@@ -60,6 +60,7 @@ func _draw():
 	
 	
 func _calculate_new_target_rotation():
+	var bubble_position = bubble.global_position
 	var distance_to_bubble = position.distance_to(bubble_position)
 	var angle = bubble_position.angle_to_point(position) + acos(LOST_DISTANCE / distance_to_bubble)
 	var target_position_a = bubble_position + Vector2.from_angle(angle) * LOST_DISTANCE * bubble_radius_target
@@ -95,7 +96,7 @@ func _update_bubble_radius_target():
 	
 	
 func _update_state():
-	if (position.distance_to(bubble_position) > LOST_DISTANCE):
+	if (bubble != null && position.distance_to(bubble.global_position) > LOST_DISTANCE):
 		if (state != FISH_STATE.LOST):
 			state = FISH_STATE.LOST
 			swim_timer = 0
@@ -115,5 +116,5 @@ func _update_wiggle_angle(delta: float):
 	rotation = actual_rotation + wiggle_angle
 	
 	
-func set_target_position(new_target_position: Vector2):
-	bubble_position = new_target_position
+func set_target(new_target: Node2D):
+	bubble = new_target
