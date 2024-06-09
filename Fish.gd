@@ -133,7 +133,7 @@ func _update_bubble_radius_target():
 	
 func _update_state(delta):
 	# check if the fish is near the mouse cursor
-	if (get_global_mouse_position().distance_to(global_position) < PANIC_DISTANCE):
+	if (global_position.distance_to(get_global_mouse_position()) < PANIC_DISTANCE):
 		state = FISH_STATE.PANIC
 		panic_timer = 0
 		swim_speed = SWIM_SPEED_MAX * PANIC_SPEED_FACTOR
