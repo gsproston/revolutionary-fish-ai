@@ -2,7 +2,8 @@ extends Node2D
 
 enum FISH_STATE {
 	IDLE, 
-	LOST
+	LOST,
+	PANIC
 }
 
 const BUBBLE_RADIUS_TARGET_CHANGE = 0.1
@@ -10,18 +11,22 @@ const BUBBLE_RADIUS_TARGET_MIN = 0.25
 const BUBBLE_RADIUS_TARGET_MAX = 0.95
 const LENGTH = 5
 const LOST_DISTANCE = 50
+const PANIC_DISTANCE = 15
+const PANIC_SPEED_FACTOR = 2.0
+const PANIC_TIMEOUT_SECONDS = 2.0
 const SWIM_SPEED_MIN = 20.0
 const SWIM_SPEED_MAX = 80.0
 const SWIM_SPEED_DECREASE_RATE = 0.95
 const SWIM_COOLDOWN_SECONDS = 1.2
 const TARGET_ROTATION_TOLERANCE = 0.01
-const TURN_SPEED = 5.0
+const TURN_SPEED = 10.0
 const WIGGLE_ANGLE_MAX = PI / 32.0
 const WIGGLE_SPEED = 0.05
 
 var actual_rotation = 0.0
 var bubble: Node2D = null
 var bubble_radius_target = 0.5
+var panic_timer = PANIC_TIMEOUT_SECONDS
 var state = FISH_STATE.IDLE
 var swim_speed = SWIM_SPEED_MIN
 var swim_timer = SWIM_COOLDOWN_SECONDS
@@ -50,7 +55,7 @@ func _ready():
 # Called every frame. 'delta' is the elapsed time since the previous frame.
 func _process(delta):
 	_update_wiggle_angle(delta)
-	_update_state()
+	_update_state(delta)
 	
 	# swim if we're facing the right direction
 	if (abs(angle_difference(actual_rotation, target_rotation)) < TARGET_ROTATION_TOLERANCE):
@@ -102,6 +107,9 @@ func _get_bubble_position() -> Vector2:
 func _rotate_to_target(delta: float):
 	var angle_to_target = angle_difference(actual_rotation, target_rotation)	
 	var angle_change = TURN_SPEED * delta
+	# turn quicker if panicked
+	if (state == FISH_STATE.PANIC):
+		angle_change *= PANIC_SPEED_FACTOR
 	# rotate towards the target
 	if (abs(angle_to_target) < angle_change):
 		actual_rotation = target_rotation
@@ -123,14 +131,23 @@ func _update_bubble_radius_target():
 	)
 	
 	
-func _update_state():
-	if (position.distance_to(_get_bubble_position()) > LOST_DISTANCE):
+func _update_state(delta):
+	# check if the fish is near the mouse cursor
+	if (get_global_mouse_position().distance_to(global_position) < PANIC_DISTANCE):
+		state = FISH_STATE.PANIC
+		panic_timer = 0
+		swim_speed = SWIM_SPEED_MAX * PANIC_SPEED_FACTOR
+		# calculate new target angle
+		target_rotation = global_position.angle_to_point(get_global_mouse_position()) + PI
+	# if already panicked, stay in panic mode until the timer is out
+	elif (state == FISH_STATE.PANIC && panic_timer < PANIC_TIMEOUT_SECONDS):
+		panic_timer += delta
+	elif (position.distance_to(_get_bubble_position()) > LOST_DISTANCE):
 		if (state != FISH_STATE.LOST):
 			state = FISH_STATE.LOST
 			swim_timer = 0
 	else:
 		state = FISH_STATE.IDLE
-		
 	
 func _update_wiggle_angle(delta: float):
 	if (wiggle_angle < -WIGGLE_ANGLE_MAX):
