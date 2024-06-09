@@ -6,6 +6,14 @@ enum FISH_STATE {
 	PANIC
 }
 
+const FISH_COLOURS = [
+	Color.CORAL,
+	Color.GOLD,
+	Color.INDIAN_RED,
+	Color.MEDIUM_ORCHID,
+	Color.LIME_GREEN
+]
+
 const BUBBLE_RADIUS_TARGET_CHANGE = 0.1
 const BUBBLE_RADIUS_TARGET_MIN = 0.25
 const BUBBLE_RADIUS_TARGET_MAX = 0.95
@@ -26,6 +34,7 @@ const WIGGLE_SPEED = 0.05
 var actual_rotation = 0.0
 var bubble: Node2D = null
 var bubble_radius_target = 0.5
+var fish_color = Color.WHITE
 var panic_timer = PANIC_TIMEOUT_SECONDS
 var state = FISH_STATE.IDLE
 var swim_speed = SWIM_SPEED_MIN
@@ -37,6 +46,8 @@ var wiggle_right = true
 
 # Called when the node enters the scene tree for the first time.
 func _ready():
+	# set the fish color
+	fish_color = FISH_COLOURS.pick_random()
 	# random position
 	var viewport_size = get_viewport().get_visible_rect().size
 	var fish_start_position = Vector2(
@@ -75,7 +86,7 @@ func _process(delta):
 	
 	
 func _draw():
-	draw_line(-Vector2(LENGTH, 0), Vector2(LENGTH, 0), Color.CORAL, 1.0, true);
+	draw_line(-Vector2(LENGTH, 0), Vector2(LENGTH, 0), fish_color, 1.0, true);
 	
 	
 func _calculate_new_target_rotation():
