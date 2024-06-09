@@ -4,7 +4,7 @@ extends Node
 @export var fish_scene: PackedScene
 
 
-const NUM_FISH = 16
+const NUM_FISH = 1000
 
 
 # Called when the node enters the scene tree for the first time.
